@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}
+    <title>Post: Home Page</title>  {% endblock title %}
+{% block content %}
+<table border =1>
+    <thead>
+        <th>Title </th>  <th>Image</th>  <th> Content </th>   <th>Created Date </th>
+        <th> Detail </th>
+    </thead>
+    <tbody>
+    {% for post in object_list %}
+    <tr>
+        <td> {{ post.title }}</td>
+         <td> {{ post.image }}</td>
+         <td> {{ post.content }}</td>
+         <td> {{ post.created_date }}</td>
+         <td> <a href="{% url 'detail_post' post.pk %}"> DETAIL </a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock content %}

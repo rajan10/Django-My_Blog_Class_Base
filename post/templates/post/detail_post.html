@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %} <title>Detail Post </title> {% endblock %}
+
+{% block content %}
+<form action="" method="POST">
+    {% csrf_token %}
+   <table border="2">
+       <thead>
+        <th>Author </th> <th>Title </th><th>Image </th> <th>Content </th> <th>Created Date </th>
+       </thead>
+       <tbody>
+       <tr> <td> {{ object.author }} </td><td> {{ object.title }} </td> <td> {{ object.image }} </td><td> {{ object.content }} </td>
+       <td> {{ object.created_date}} </td></tr>
+       </tbody>
+   </table>
+</form>
+{% endblock content %}
+
+
+
