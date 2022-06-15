@@ -55,7 +55,7 @@ class UpdatePostView(View):
 class DeletePostView(generic.DeleteView):
     model=Post
     template_name = "post/delete_post.html"
-    success_url='/post'
+    success_url='/'
 
 
 

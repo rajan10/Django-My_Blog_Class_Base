@@ -14,7 +14,7 @@
     <tr>
         <td> {{ post.title }}</td>
          <td> {{ post.image }}</td>
-         <td> {{ post.content }}</td>
+         <td> {{ post.content |safe }}</td>
          <td> {{ post.created_date }}</td>
          <td> <a href="{% url 'detail_post' post.pk %}"> DETAIL </a></td>
         <td> <a href ="{% url 'update_post' post.pk %}"> UPDATE </a></td>
