@@ -46,15 +46,16 @@ class UpdatePostView(View):
         post= Post.objects.get(id=pk)
         form=PostForm(request.POST)
         if form.is_valid():
-            post.author=form.cleaned_data.get('author')
             post.title = form.cleaned_data.get('title')
             post.image = form.cleaned_data.get('image')
             post.content = form.cleaned_data.get('content')
-            post.created_date = form.cleaned_data.get('created_date')
-            post.save(update_fields=['author','title','image','content','created_date'])
+            post.save(update_fields=['author','title','image','content'])
             return redirect('/')
 
-
+class DeletePostView(generic.DeleteView):
+    model=Post
+    template_name = "post/delete_post.html"
+    success_url='/post'
 
 
 

@@ -6,6 +6,8 @@
     <thead>
         <th>Title </th>  <th>Image</th>  <th> Content </th>   <th>Created Date </th>
         <th> Detail </th>
+        <th> Update </th>
+        <th> Delete </th>
     </thead>
     <tbody>
     {% for post in object_list %}
@@ -15,6 +17,8 @@
          <td> {{ post.content }}</td>
          <td> {{ post.created_date }}</td>
          <td> <a href="{% url 'detail_post' post.pk %}"> DETAIL </a></td>
+        <td> <a href ="{% url 'update_post' post.pk %}"> UPDATE </a></td>
+        <td> <a href="{% url 'delete_post' post.pk %}"> DELETE </a></td>
     </tr>
     {% endfor %}
     </tbody>
