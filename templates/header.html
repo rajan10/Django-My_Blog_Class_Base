@@ -1,1 +1,12 @@
-<h2>This is header</h2>
+<nav>
+
+    <ul>
+            <li>
+            <a href="{% url 'register' %}"> Registration || </a>
+                <a href="{% url 'login' %}"> Login  || </a>
+                  <a href="{% url 'logout' %}"> logout  || </a>
+            <a href="{% url 'index' %}"> Home Page || </a>
+         <a href="{% url 'create_post' %}"> Create Post </a>
+        </li>
+    </ul>
+</nav>
