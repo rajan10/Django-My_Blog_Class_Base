@@ -1,18 +1,20 @@
 from django.shortcuts import render,redirect
-from django.views import generic
+from django.contrib.auth.mixins import LoginRequiredMixin
+# generic.ListView=
+from django.views.generic import ListView, DetailView, DeleteView
 from django.views.generic import View
 from post.models import Post
 from post.forms import PostForm
 # Create your views here.
-class HomeView(generic.ListView):
+class HomeView(ListView):
     template_name='post/index.html'
     model=Post
 
-class CreatePostView(View):
-    # template_name='post/create_post.html'
-    # model=Post
-    # success_url='/'
+class CreatePostView(LoginRequiredMixin,View):
+    # accounts / login
+    # login_url='/login'
     def get(self,request):
+        user=request.user
         context={}
         form=PostForm()
         context['form']=form
@@ -28,11 +30,13 @@ class CreatePostView(View):
             post.save()
             return redirect('/')
 
-class DetailPostView(generic.DetailView):
+class DetailPostView(LoginRequiredMixin,DetailView):
+    # login_url='/login'
     model=Post
     template_name='post/detail_post.html'
 
-class UpdatePostView(View):
+class UpdatePostView(LoginRequiredMixin,View):
+    # login_url='/login'
     def get(self,request,pk):
         context={}
         author=request.user
@@ -52,7 +56,7 @@ class UpdatePostView(View):
             post.save(update_fields=['author','title','image','content'])
             return redirect('/')
 
-class DeletePostView(generic.DeleteView):
+class DeletePostView(LoginRequiredMixin,DeleteView):
     model=Post
     template_name = "post/delete_post.html"
     success_url='/'
