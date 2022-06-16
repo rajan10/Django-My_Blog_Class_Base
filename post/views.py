@@ -1,10 +1,10 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 # generic.ListView=
 from django.views.generic import ListView, DetailView, DeleteView
 from django.views.generic import View
-from post.models import Post
-from post.forms import PostForm
+from post.models import Post, Comment
+from post.forms import PostForm, CommentForm
 # Create your views here.
 class HomeView(ListView):
     template_name='post/index.html'
@@ -34,6 +34,32 @@ class DetailPostView(LoginRequiredMixin,DetailView):
     # login_url='/login'
     model=Post
     template_name='post/detail_post.html'
+
+    def get(self, request, *args, **kwargs):
+        context={}
+        context['form']=CommentForm()
+        pk=kwargs.get('pk')
+        post=Post.objects.get(pk=pk)
+        # pass the context of the Post object 'post' as you need the post to be populated in the page
+        # and then registered user can comment on the specifice post.
+        context['post']=post
+        # below one posts is the reverse relationship for post which links to Comment Class via FK
+        context['posts']=Comment.objects.filter(post=post)
+
+        return render(request, template_name="post/detail_post.html", context=context)
+
+    def post(self, request, *args, **kwargs):
+        commentor = request.user
+        pk=kwargs.get('pk')
+        post = Post.objects.get(pk=pk)
+
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            content = form.cleaned_data['content']
+            comment = Comment(commentor=commentor, post=post, content=content)
+            comment.save()
+            # redirect to same page
+            return redirect(request.path_info)
 
 class UpdatePostView(LoginRequiredMixin,View):
     # login_url='/login'

@@ -2,18 +2,28 @@
 {% block title %} <title>Detail Post </title> {% endblock %}
 
 {% block content %}
+<h1> {{ post.title}} </h1>
+<p>{{ post.image }} </p>
+<p>{{ post.content }} </p>
+<h3> hellow</h3>
+
 <form action="" method="POST">
     {% csrf_token %}
-   <table border="2">
-       <thead>
-        <th>Author </th> <th>Title </th><th>Image </th> <th>Content </th> <th>Created Date </th>
-       </thead>
-       <tbody>
-       <tr> <td> {{ object.author }} </td><td> {{ object.title }} </td> <td> {{ object.image }} </td><td> {{ object.content }} </td>
-       <td> {{ object.created_date}} </td></tr>
-       </tbody>
-   </table>
+    {{ form.as_p }}
+<input type="submit" value="Comment">
 </form>
+
+<p>
+    {% if posts %}
+    {% for comment in posts %}
+        <p> <strong> {{ comment.content }}-<i>{{ comment.commentor }}</i>
+
+            </strong>
+
+    {% endfor %}
+
+    {% endif %}
+</p>
 {% endblock content %}
 
 
