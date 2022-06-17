@@ -17,7 +17,7 @@
     {% if posts %}
     {% for comment in posts %}
         <p> <strong> {{ comment.content }}-<i>{{ comment.commentor }}</i>
-
+    <a href="{% url 'update_comment' comment.pk %}">UPdate</a>
             </strong>
 
     {% endfor %}

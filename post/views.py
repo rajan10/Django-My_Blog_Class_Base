@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 # generic.ListView=
-from django.views.generic import ListView, DetailView, DeleteView
+from django.views.generic import ListView, DetailView, DeleteView,UpdateView
 from django.views.generic import View
 from post.models import Post, Comment
 from post.forms import PostForm, CommentForm
@@ -30,6 +30,7 @@ class CreatePostView(LoginRequiredMixin,View):
             post.save()
             return redirect('/')
 
+# contains detail view and Comment view
 class DetailPostView(LoginRequiredMixin,DetailView):
     # login_url='/login'
     model=Post
@@ -88,4 +89,19 @@ class DeletePostView(LoginRequiredMixin,DeleteView):
     success_url='/'
 
 
-
+class UpdateCommentView(LoginRequiredMixin, View):
+    def get(self,request,pk):
+        context={}
+        commentor=request.user
+        comment=Comment.objects.get(id=pk)
+        data={'commentor':commentor,'post':comment.post,'content':comment.content,'created_date':comment.created_date}
+        form=CommentForm(data)
+        context['form']=form
+        return render(request, template_name="post/detail_post.html",context=context)
+    def post(self,request, pk):
+        comment=Comment.objects.get(id=pk)
+        form=CommentForm(request.POST)
+        if form.is_valid():
+            comment.content=form.cleaned_data.get('content')
+            comment.save(update_fields=['content'])
+            return redirect(request.path_info)
