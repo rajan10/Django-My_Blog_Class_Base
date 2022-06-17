@@ -109,7 +109,6 @@ class UpdateCommentView(LoginRequiredMixin, View):
 
 class DeleteCommentView(LoginRequiredMixin,View):
     def get(self, request, pk):
-        commentor=request.user
         comment=Comment.objects.get(pk=pk)
         comment.delete()
         id=comment.post.id
