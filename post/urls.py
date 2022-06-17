@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from .views import HomeView,CreatePostView, DetailPostView, UpdatePostView, DeletePostView, UpdateCommentView
+from .views import HomeView,CreatePostView, DetailPostView, UpdatePostView, DeletePostView, UpdateCommentView, DeleteCommentView
 
 urlpatterns = [
     path('', HomeView.as_view(), name="index"),
@@ -10,4 +10,5 @@ urlpatterns = [
     path('delete_post/<int:pk>', DeletePostView.as_view(), name="delete_post"),
 
     path('update_comment/<int:pk>',UpdateCommentView.as_view(), name="update_comment"),
+    path('delete_comment/<int:pk>', DeleteCommentView.as_view(), name="delete_comment"),
 ]
