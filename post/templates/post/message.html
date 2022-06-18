@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Message </title>
+{% endblock title %}
+
+
+{% block content %}
+{%if comment_update%}
+<h2>{{comment_update}}</h2>
+{% endif %}
+{%if comment_delete%}
+<h2>{{comment_delete}}</h2>
+{%endif%}
+{%if login_message%}
+{{login_message}}
+
+{%endif%}
+
+{% endblock content %}

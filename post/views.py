@@ -88,24 +88,38 @@ class DeletePostView(LoginRequiredMixin,DeleteView):
     template_name = "post/delete_post.html"
     success_url='/'
 
-
 class UpdateCommentView(LoginRequiredMixin, View):
-    def get(self,request,pk):
-        context={}
-        commentor=request.user
-        comment=Comment.objects.get(id=pk)
-        data={'commentor':commentor,'post':comment.post,'content':comment.content,'created_date':comment.created_date}
-        form=CommentForm(data)
-        context['form']=form
-        return render(request, template_name="post/detail_post.html",context=context)
-    def post(self,request, pk):
-        comment=Comment.objects.get(id=pk)
-        form=CommentForm(request.POST)
-        if form.is_valid():
-            comment.content=form.cleaned_data.get('content')
-            comment.save(update_fields=['content'])
-            id=comment.post.id
-            return redirect(f'/detail_post/{ id }')
+    template_name = 'post/detail.html'
+    form_class = CommentForm
+    queryset = Comment.objects.all()
+    def get_context_data(self, **kwargs):
+        pk = self.kwargs['pk']
+        context = super().get_context_data(**kwargs)
+        comment = Comment.objects.get(pk=pk)
+
+        post = comment.post
+        context['post'] = post
+        context['posts'] = Comment.objects.filter(post=post)
+        return context
+
+    def get(self, request, *args, **kwargs):
+        pk = self.kwargs['pk']
+        comment = Comment.objects.get(pk=pk)
+
+        user = request.user
+        commentor = comment.commentor
+        if user.username == commentor:
+            return super().get(request, *args, **kwargs)
+        else:
+            message = "You can only update the comment you have written."
+            return render(request, 'post/message.html', {"comment_update": message})
+
+    def post(self, request, *args, **kwargs):
+        pk = kwargs.get('pk')
+        comment = get_object_or_404(Comment, pk=pk)
+        post_pk = comment.post.pk
+        self.success_url = f'/detail_post/{ post_pk }'
+        return super().post(request, *args, **kwargs)
 
 class DeleteCommentView(LoginRequiredMixin,View):
     def get(self, request, pk):
