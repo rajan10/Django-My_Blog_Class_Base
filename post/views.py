@@ -121,10 +121,18 @@ class UpdateCommentView(LoginRequiredMixin, View):
         self.success_url = f'/detail_post/{ post_pk }'
         return super().post(request, *args, **kwargs)
 
-class DeleteCommentView(LoginRequiredMixin,View):
-    def get(self, request, pk):
-        comment=Comment.objects.get(pk=pk)
+
+class DeleteCommentView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        pk = kwargs.get('pk')
+        comment = get_object_or_404(Comment, pk=pk)
+        commentor = comment.commentor
+        post_pk = comment.post.pk
         comment.delete()
-        id=comment.post.id
-        return redirect(f'/detail_post/{ id }')
+        if user.username == commentor:
+            return redirect(f'/detail_post/{ post_pk }')
+        else:
+            message = "You can only delete the comment you have written."
+            return render(request, 'post/message.html', {"comment_delete": message})
 
