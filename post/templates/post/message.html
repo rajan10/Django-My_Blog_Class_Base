@@ -6,15 +6,20 @@
 
 
 {% block content %}
-{%if comment_update%}
-<h2>{{comment_update}}</h2>
-{% endif %}
-{%if comment_delete%}
-<h2>{{comment_delete}}</h2>
-{%endif%}
-{%if login_message%}
-{{login_message}}
+    {%if comment_update%}
+        <h2>{{comment_update}}</h2>
+    {% endif %}
 
-{%endif%}
+{%if comment_delete%}
+        <h2>{{comment_delete}}</h2>
+{% endif %}
+
+{% if login_message %}
+    {{login_message}}
+{% endif %}
+
+{%if post_update  %}
+    {{ post_update }}
+{% endif %}
 
 {% endblock content %}

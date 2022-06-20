@@ -62,34 +62,57 @@ class DetailPostView(LoginRequiredMixin,DetailView):
             # redirect to same page
             return redirect(request.path_info)
 
-class UpdatePostView(LoginRequiredMixin,View):
+class UpdatePostView(LoginRequiredMixin,UpdateView):
     # login_url='/login'
-    def get(self,request,pk):
-        context={}
-        author=request.user
-        post=Post.objects.get(id=pk)
-        data={'author':author,'title':post.title,'image':post.image,'content':post.content,'created_date':post.created_date}
-        form=PostForm(data)
-        context['form']=form
-        return render(request, template_name="post/update_post.html",context=context)
-
-    def post(self, request,pk):
-        post= Post.objects.get(id=pk)
-        form=PostForm(request.POST)
-        if form.is_valid():
-            post.title = form.cleaned_data.get('title')
-            post.image = form.cleaned_data.get('image')
-            post.content = form.cleaned_data.get('content')
-            post.save(update_fields=['author','title','image','content'])
-            return redirect('/')
-
+    template_name = 'post/update_post.html'
+    form_class = PostForm
+    model=Post
+    # class UpdateView  has inbuilt get/ post
+        def get(self, request, *args, **kwargs):
+        # from url page get the <int:pk> below code
+        pk = self.kwargs['pk']
+        post = Post.objects.get(pk=pk)
+        # below is an object
+        user = request.user
+        author = post.author
+        # below both are object
+        if user == author:
+            # whatever is in get () in class UpdateView override that with this func
+            return super().get(request, *args, **kwargs)
+        else:
+            message = "You can only update the post you have written."
+            return render(request, 'post/message.html',{"comment_update": message})
+    def post(self, request, *args, **kwargs):
+        pk = kwargs.get('pk')
+        # after success send it to below url
+        self.success_url = f'/detail_post/{ pk }'
+        # below updates the get which is from Class UpdateView implicitly + db commit
+        return super().post(request, *args, **kwargs)
+    #
 class DeletePostView(LoginRequiredMixin,DeleteView):
     model=Post
     template_name = "post/delete_post.html"
     success_url='/'
+    # overriding the default inbuilt get (self, request, *args, **kwargs) of DeleteView Class
+    def get(self,request, *args, **kwargs):
+        pk=self.kwargs['pk']
+        post=Post.objects.get(pk=pk)
+        user=request.user
+        author=post.author
+        # below r objects
+        if user==author:
+           # u don't need to delete when u do 'get'; u r just modifying the get with author, user comparison
+           return super().get(request, *args, **kwargs)
+        else:
+            message="you can only delete the post You have written"
+            return render(request, 'post/message.html',{'post_update':message})
+    def post(self, request, *args, **kwargs):
+        self.success_url='/'
+        # deleteView has object.Delete() inside its post method
+        return super().post(request, *args, **kwargs)
 
-class UpdateCommentView(LoginRequiredMixin, View):
-    template_name = 'post/detail.html'
+class UpdateCommentView(LoginRequiredMixin, UpdateView):
+    template_name = 'post/detail_post.html'
     form_class = CommentForm
     queryset = Comment.objects.all()
     def get_context_data(self, **kwargs):
@@ -108,7 +131,7 @@ class UpdateCommentView(LoginRequiredMixin, View):
 
         user = request.user
         commentor = comment.commentor
-        if user.username == commentor:
+        if user== commentor:
             return super().get(request, *args, **kwargs)
         else:
             message = "You can only update the comment you have written."
@@ -127,10 +150,13 @@ class DeleteCommentView(LoginRequiredMixin, View):
         user = request.user
         pk = kwargs.get('pk')
         comment = get_object_or_404(Comment, pk=pk)
+        # commentor type is objec type eventhough commentor looks like attribute of Comment
         commentor = comment.commentor
+
+
         post_pk = comment.post.pk
-        comment.delete()
-        if user.username == commentor:
+        if user == commentor:
+            comment.delete()
             return redirect(f'/detail_post/{ post_pk }')
         else:
             message = "You can only delete the comment you have written."
