@@ -23,4 +23,33 @@
     {% endfor %}
     </tbody>
 </table>
+
+{% if is_paginated %}
+
+    {% if page_obj.has_previous %}
+
+        <a href="?page={{ page_obj.previous_page_number }}"> &laquo;</a>
+
+        {% else %}
+  This is the first page &laquo
+    {% endif %}
+
+{% for i in paginator.page_range %}
+    {% if page_obj.number == i %}
+     {{ i }} (Current)
+    {% else %}
+     <a href="?page= {{ i }}"> {{ i}}</a>
+    {% endif %}
+{% endfor %}
+
+    {% if page_obj.has_next %}
+     <a href="?page={{ page_obj.next_page_number }}"> &raquo; </a>
+    {% else %}
+     No next page &raquo;
+    {% endif %}
+
+
+{% endif %}
+
+
 {% endblock content %}

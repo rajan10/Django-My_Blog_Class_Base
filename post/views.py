@@ -8,14 +8,12 @@ from post.forms import PostForm, CommentForm
 from my_blog_class_base.db_connection  import BlogApi
 from django.http import HttpResponse
 
-
-
-# Create your views here.
-# class HomeView(ListView):
-class HomeView(View):
+class HomeView(ListView):
     template_name='post/index.html'
+    context_object_name="object_list"
+    paginate_by = 10
     model=Post
-# here paginate
+    queryset=Post.objects.all()
 class CreatePostView(LoginRequiredMixin,View):
     # accounts / login
     # login_url='/login'
