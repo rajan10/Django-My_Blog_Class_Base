@@ -9,7 +9,7 @@ class Post(models.Model):
     title=models. CharField(max_length=100, help_text="Type the title")
     image=models.ImageField(upload_to='post_images', null=True, blank=True)
     content=RichTextField()
-    created_date=models.DateTimeField(auto_now_add=True)
+    created_date=models.DateTimeField()
 
     class Meta:
         ordering=['-created_date']

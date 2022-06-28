@@ -5,11 +5,17 @@ from django.views.generic import ListView, DetailView, DeleteView, UpdateView
 from django.views.generic import View
 from post.models import Post, Comment
 from post.forms import PostForm, CommentForm
+from my_blog_class_base.db_connection  import BlogApi
+from django.http import HttpResponse
+
+
+
 # Create your views here.
-class HomeView(ListView):
+# class HomeView(ListView):
+class HomeView(View):
     template_name='post/index.html'
     model=Post
-
+# here paginate
 class CreatePostView(LoginRequiredMixin,View):
     # accounts / login
     # login_url='/login'
@@ -68,8 +74,8 @@ class UpdatePostView(LoginRequiredMixin,UpdateView):
     form_class = PostForm
     model=Post
     # class UpdateView  has inbuilt get/ post
-        def get(self, request, *args, **kwargs):
-        # from url page get the <int:pk> below code
+    def get(self, request, *args, **kwargs):
+    # from url page get the <int:pk> below code
         pk = self.kwargs['pk']
         post = Post.objects.get(pk=pk)
         # below is an object
@@ -78,11 +84,15 @@ class UpdatePostView(LoginRequiredMixin,UpdateView):
         # below both are object
         if user == author:
             # whatever is in get () in class UpdateView override that with this func
+            # super() function represents the parent class of the current one in this case, TemplateView
+            # and will output whatever it would this modified get() would want.
             return super().get(request, *args, **kwargs)
         else:
             message = "You can only update the post you have written."
             return render(request, 'post/message.html',{"comment_update": message})
+    # class UpdateView has
     def post(self, request, *args, **kwargs):
+        # from url page get <int:pk> below code
         pk = kwargs.get('pk')
         # after success send it to below url
         self.success_url = f'/detail_post/{ pk }'
@@ -162,3 +172,8 @@ class DeleteCommentView(LoginRequiredMixin, View):
             message = "You can only delete the comment you have written."
             return render(request, 'post/message.html', {"comment_delete": message})
 
+def populate_post(request):
+    if request.method=="GET":
+        blogApiObject= BlogApi()
+        blogApiObject.populate()
+        return HttpResponse("Successfully populated the post from PostgreSQL")
